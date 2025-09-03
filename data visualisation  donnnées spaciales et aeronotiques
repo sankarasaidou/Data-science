@@ -1,0 +1,456 @@
+import matplotlib.pyplot as plt
+import seaborn as sns
+import pandas as pd
+
+# Exemple de données
+data = pd.DataFrame({
+    "Numéro de vol": [101, 102, 103, 104, 105, 106, 107, 108, 109, 110],
+    "Type d'orbite": ["LEO", "LEO", "GTO", "LEO", "MEO", "GTO", "LEO", "MEO", "GTO", "LEO"]
+})
+
+# Créer le diagramme de dispersion
+plt.figure(figsize=(8, 5))
+sns.stripplot(x="Type d'orbite", y="Numéro de vol", data=data, jitter=True)
+
+# Ajouter des titres
+plt.title("Dispersion des numéros de vol par type d'orbite")
+plt.xlabel("Type d'orbite")
+plt.ylabel("Numéro de vol")
+
+# Afficher le graphique
+plt.show()
+
+#-------------
+
+import pandas as pd
+import numpy as np
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+# Création de données fictives pour les lancements de la NASA
+np.random.seed(42)
+
+n = 100  # Nombre de lancements fictifs
+
+nasa_data = pd.DataFrame({
+    'FlightNumber': range(1, n+1),
+    'LaunchDate': pd.date_range(start='2010-01-01', periods=n, freq='M'),
+    'LaunchSite': np.random.choice(['Kennedy Space Center', 'Vandenberg Air Force Base', 'Wallops Flight Facility'], n),
+    'PayloadMass_kg': np.random.randint(500, 10000, n),
+    'OrbitType': np.random.choice(['LEO', 'GEO', 'MEO', 'SSO', 'Polar'], n),
+    'LaunchSuccess': np.random.choice([True, False], n, p=[0.8, 0.2])
+})
+
+# Aperçu des données
+print(nasa_data.head())
+
+# Visualisation : Diagramme de dispersion de la masse de la charge utile par rapport au type d'orbite
+plt.figure(figsize=(10, 6))
+sns.scatterplot(x='OrbitType', y='PayloadMass_kg', hue='LaunchSuccess', data=nasa_data)
+plt.title('Relation entre la charge utile et le type d orbite')
+plt.xlabel('Type dorbite')
+plt.ylabel('Masse de la charge utile (kg)')
+plt.legend(title='Succès du lancement')
+plt.show()
+
+#-------
+
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+# Création de données fictives de la NASA
+missions_data = {
+    'Mission': ['Apollo 11', 'Voyager 1', 'Curiosity', 'Hubble', 'Perseverance', 'Juno', 'New Horizons', 'Pioneer 10'],
+    'Payload (kg)': [4500, 825, 900, 11110, 1025, 3625, 478, 258],
+    'Orbit Type': ['LEO', 'Heliocentric', 'Mars Orbit', 'LEO', 'Mars Orbit', 'Jupiter Orbit', 'Heliocentric', 'Heliocentric'],
+    'Launch Success': ['Success', 'Success', 'Success', 'Success', 'Success', 'Success', 'Success', 'Success'],
+    'Launch Year': [1969, 1977, 2011, 1990, 2020, 2011, 2006, 1972]
+}
+
+# Création d'un DataFrame fictif
+df = pd.DataFrame(missions_data)
+
+# Affichage des premières lignes du DataFrame
+print(df.head())
+
+# Création du diagramme de dispersion
+plt.figure(figsize=(8, 6))
+sns.scatterplot(x='Orbit Type', y='Payload (kg)', hue='Launch Success', data=df, s=100)
+plt.title('Relation entre la charge utile et le type d\'orbite pour les missions de la NASA')
+plt.xlabel('Type d\'orbite')
+plt.ylabel('Charge utile (kg)')
+plt.xticks(rotation=45)
+plt.legend(title='Succès du lancement')
+plt.tight_layout()
+plt.show()
+
+# Calcul du taux de réussite moyen annuel
+success_rate = df.groupby('Launch Year')['Launch Success'].apply(lambda x: (x == 'Success').mean()).reset_index()
+
+# Création du graphique linéaire du taux de réussite moyen annuel
+plt.figure(figsize=(8, 6))
+plt.plot(success_rate['Launch Year'], success_rate['Launch Success'], marker='o', linestyle='-', color='b')
+plt.title('Taux de réussite moyen annuel des lancements de la NASA')
+plt.xlabel('Année de lancement')
+plt.ylabel('Taux de réussite')
+plt.grid(True)
+plt.tight_layout()
+plt.show()
+
+"""
+Explications :
+- 'Mission' : Le nom de la mission spatiale.
+- 'Payload (kg)' : La charge utile transportée lors de la mission.
+- 'Orbit Type' : Le type d'orbite visé par la mission.
+- 'Launch Success' : Indique si le lancement a été un succès.
+- 'Launch Year' : Année de lancement de la mission.
+
+Ce graphique de dispersion illustre comment la charge utile varie en fonction du type d'orbite.
+La taille de la charge utile change en fonction de la destination orbitale, avec des charges plus lourdes
+pour des missions en orbite basse terrestre (LEO) et des charges plus légères pour des missions interplanétaires.
+Toutes les missions affichées ici sont fictivement marquées comme des succès.
+
+Le graphique linéaire montre le taux de réussite moyen annuel des lancements de la NASA,
+permettant de visualiser la performance des lancements au fil des décennies.
+"""
+#-------
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+# Création de données fictives de la NASA
+data = {
+    'Mission': ['Apollo 11', 'Voyager 1', 'Curiosity', 'Hubble', 'Perseverance', 'Juno', 'New Horizons', 'Pioneer 10'],
+    'Payload (kg)': [4500, 825, 900, 11110, 1025, 3625, 478, 258],
+    'Orbit Type': ['LEO', 'Heliocentric', 'Mars Orbit', 'LEO', 'Mars Orbit', 'Jupiter Orbit', 'Heliocentric', 'Heliocentric'],
+    'Launch Success': ['Success', 'Success', 'Success', 'Success', 'Success', 'Success', 'Success', 'Success'],
+    'Launch Site': ['Kennedy Space Center', 'Cape Canaveral', 'Vandenberg AFB', 'Kennedy Space Center', 'Cape Canaveral', 'Vandenberg AFB', 'Kennedy Space Center', 'Cape Canaveral']
+}
+
+# Création d'un DataFrame fictif
+df = pd.DataFrame(data)
+
+# Affichage des premières lignes du DataFrame
+print(df.head())
+
+# Création du diagramme de dispersion
+plt.figure(figsize=(8, 6))
+sns.scatterplot(x='Orbit Type', y='Payload (kg)', hue='Launch Success', data=df, s=100)
+plt.title('Relation entre la charge utile et le type d\'orbite pour les missions de la NASA')
+plt.xlabel('Type d\'orbite')
+plt.ylabel('Charge utile (kg)')
+plt.xticks(rotation=45)
+plt.legend(title='Succès du lancement')
+plt.tight_layout()
+plt.show()
+
+# Recherche des sites de lancement uniques
+unique_launch_sites = df['Launch Site'].unique()
+print("Sites de lancement uniques :", unique_launch_sites)
+
+"""
+Explications :
+- 'Mission' : Le nom de la mission spatiale.
+- 'Payload (kg)' : La charge utile transportée lors de la mission.
+- 'Orbit Type' : Le type d'orbite visé par la mission.
+- 'Launch Success' : Indique si le lancement a été un succès.
+- 'Launch Site' : Le site de lancement de la mission.
+
+Ce graphique de dispersion illustre comment la charge utile varie en fonction du type d'orbite.
+La taille de la charge utile change en fonction de la destination orbitale, avec des charges plus lourdes
+pour des missions en orbite basse terrestre (LEO) et des charges plus légères pour des missions interplanétaires.
+Toutes les missions affichées ici sont fictivement marquées comme des succès.
+
+La recherche des sites de lancement uniques permet d'identifier les différentes bases de lancement utilisées
+par la NASA dans cet exemple de données.
+"""
+#----------
+
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+# Création de données fictives de la NASA
+data = {
+    'Mission': ['Apollo 11', 'Voyager 1', 'Curiosity', 'Hubble', 'Perseverance', 'Juno', 'New Horizons', 'Pioneer 10'],
+    'Payload (kg)': [4500, 825, 900, 11110, 1025, 3625, 478, 258],
+    'Orbit Type': ['LEO', 'Heliocentric', 'Mars Orbit', 'LEO', 'Mars Orbit', 'Jupiter Orbit', 'Heliocentric', 'Heliocentric'],
+    'Launch Site': ['CCAFS LC-39A', 'VAFB SLC-4E', 'CCAFS LC-41', 'KSC LC-39A', 'CCAFS SLC-40', 'CCAFS LC-37B', 'VAFB SLC-3E', 'CCAFS LC-40'],
+    'Launch Success': ['Success', 'Success', 'Success', 'Success', 'Success', 'Success', 'Success', 'Success']
+}
+
+# Création d'un DataFrame fictif
+df = pd.DataFrame(data)
+
+# Affichage des premières lignes du DataFrame
+print(df.head())
+
+# Création du diagramme de dispersion
+plt.figure(figsize=(8, 6))
+sns.scatterplot(x='Orbit Type', y='Payload (kg)', hue='Launch Success', data=df, s=100)
+plt.title('Relation entre la charge utile et le type d\'orbite pour les missions de la NASA')
+plt.xlabel('Type d\'orbite')
+plt.ylabel('Charge utile (kg)')
+plt.xticks(rotation=45)
+plt.legend(title='Succès du lancement')
+plt.tight_layout()
+plt.show()
+
+# Trouver les noms des sites de lancement uniques
+unique_launch_sites = df['Launch Site'].unique()
+print("Sites de lancement uniques:", unique_launch_sites)
+
+# Trouver les 5 enregistrements où les sites de lancement commencent par 'CCA'
+cca_sites = df[df['Launch Site'].str.startswith('CCA')].head(5)
+print("\nEnregistrements avec sites de lancement commençant par 'CCA':")
+print(cca_sites)
+
+"""
+Explications :
+- 'Mission' : Le nom de la mission spatiale.
+- 'Payload (kg)' : La charge utile transportée lors de la mission.
+- 'Orbit Type' : Le type d'orbite visé par la mission.
+- 'Launch Site' : Le site de lancement utilisé.
+- 'Launch Success' : Indique si le lancement a été un succès.
+
+Ce graphique de dispersion illustre comment la charge utile varie en fonction du type d'orbite.
+La taille de la charge utile change en fonction de la destination orbitale, avec des charges plus lourdes
+pour des missions en orbite basse terrestre (LEO) et des charges plus légères pour des missions interplanétaires.
+Toutes les missions affichées ici sont fictivement marquées comme des succès.
+
+Les sites de lancement uniques sont listés pour montrer la diversité des bases de lancement.
+Les enregistrements avec les sites de lancement commençant par 'CCA' illustrent les lancements effectués depuis
+le Cape Canaveral Air Force Station.
+"""
+###------------
+
+import pandas as pd
+
+# Exemple de données
+data = {
+    'Mission': ['Apollo 11', 'Voyager 1', 'Curiosity', 'Hubble', 'Perseverance', 'Juno', 'New Horizons', 'Pioneer 10'],
+    'Launch Site': ['CCAFS LC-39A', 'CCAFS SLC-41', 'CCAFS SLC-41', 'KSC LC-39A', 'CCAFS SLC-41', 'KSC LC-39B', 'CCAFS SLC-41', 'CCAFS LC-36A']
+}
+
+# Création du DataFrame
+df = pd.DataFrame(data)
+
+# Filtrer les sites de lancement commençant par "CCA"
+filtered_df = df[df['Launch Site'].str.startswith('CCA')]
+
+# Sélectionner les 5 premiers résultats
+result = filtered_df.head(5)
+
+# Afficher le résultat
+print(result)
+#-----------
+
+import pandas as pd
+
+# Données fictives des lancements de la NASA avec les charges utiles transportées
+# en tonnes et les contributions des boosters en pourcentage
+launch_data = pd.DataFrame({
+    'Launch': ['Mission A', 'Mission B', 'Mission C', 'Mission D'],
+    'Total_Payload_Tons': [70, 95, 130, 100],
+    'Booster_Contribution_Percent': [75, 80, 78, 76]
+})
+
+# Calcul de la charge utile transportée par les boosters (en tonnes)
+launch_data['Booster_Payload_Tons'] = (
+    launch_data['Total_Payload_Tons'] * launch_data['Booster_Contribution_Percent'] / 100
+)
+
+# Calcul de la charge utile totale transportée par les boosters
+total_booster_payload = launch_data['Booster_Payload_Tons'].sum()
+
+# Affichage des résultats
+print(launch_data)
+print(f"\nCharge utile totale transportée par les boosters: {total_booster_payload:.2f} tonnes")
+
+#----------
+import pandas as pd
+
+# Données fictives des missions du Falcon 9 v1.1 avec les charges utiles transportées en kilogrammes
+missions_data = pd.DataFrame({
+    'Mission': ['Mission 1', 'Mission 2', 'Mission 3', 'Mission 4'],
+    'Payload_kg': [5000, 6000, 5500, 5800]
+})
+
+# Calcul de la masse moyenne de la charge utile
+average_payload = missions_data['Payload_kg'].mean()
+
+# Affichage du résultat
+print(f"Masse moyenne de la charge utile transportée par le Falcon 9 v1.1 : {average_payload:.2f} kg")
+#------------
+
+import pandas as pd
+
+# Exemple de DataFrame (remplacez-le par votre propre fichier ou source de données)
+data = {
+    'date': ['2020-01-01', '2020-02-01', '2020-03-01', '2020-04-01', '2020-05-01'],
+    'atterrissage_reussi': [True, False, True, True, False]
+}
+
+df = pd.DataFrame(data)
+
+# Convertir la colonne 'date' en type datetime
+df['date'] = pd.to_datetime(df['date'])
+
+# Filtrer les atterrissages réussis et trier les dates
+atterrissages_reussis = df[df['atterrissage_reussi'] == True].sort_values(by='date')
+
+# Récupérer la première date de l'atterrissage réussi
+premier_atterrissage_reussi = atterrissages_reussis.iloc[0]['date']
+
+print("Le premier atterrissage réussi a eu lieu le :", premier_atterrissage_reussi)
+#-----------
+
+
+boosters = [
+    {"nom": "B1021", "charge_utile": 5300, "atterrissage": "OCISLY"},
+    {"nom": "B1046", "charge_utile": 5800, "atterrissage": "OCISLY"},
+    {"nom": "B1049", "charge_utile": 5000, "atterrissage": "OCISLY"},
+    {"nom": "B1051", "charge_utile": 16000, "atterrissage": "OCISLY"},
+    {"nom": "B1060", "charge_utile": 4400, "atterrissage": "JRTI"},
+]
+
+# Filtrer les boosters respectant la condition
+boosters_filtres = [b for b in boosters if 4000 <= b["charge_utile"] <= 6000]
+
+# Afficher les résultats
+for booster in boosters_filtres:
+    print(f"Booster {booster['nom']} - Charge utile : {booster['charge_utile']} kg - Atterrissage : {booster['atterrissage']}")
+
+#-------
+boosters = [
+    {"nom": "B1021", "charge_utile": 5300, "atterrissage": "OCISLY", "reussi": True},
+    {"nom": "B1046", "charge_utile": 5800, "atterrissage": "OCISLY", "reussi": True},
+    {"nom": "B1049", "charge_utile": 5000, "atterrissage": "OCISLY", "reussi": True},
+    {"nom": "B1051", "charge_utile": 16000, "atterrissage": "OCISLY", "reussi": False},
+    {"nom": "B1060", "charge_utile": 4400, "atterrissage": "JRTI", "reussi": True},
+]
+
+# Filtrer les boosters respectant la condition
+boosters_filtres = [b for b in boosters if 4000 <= b["charge_utile"] <= 6000]
+
+# Compter les missions réussies et échouées
+missions_reussies = sum(1 for b in boosters_filtres if b["reussi"])
+missions_echouees = len(boosters_filtres) - missions_reussies
+
+# Afficher les résultats
+for booster in boosters_filtres:
+    print(f"Booster {booster['nom']} - Charge utile : {booster['charge_utile']} kg - Atterrissage : {booster['atterrissage']}")
+
+print(f"Total des missions réussies : {missions_reussies}")
+print(f"Total des missions échouées : {missions_echouees}")
+
+#----------
+boosters = [
+    {"nom": "B1021", "charge_utile": 5300, "atterrissage": "OCISLY", "reussi": True},
+    {"nom": "B1046", "charge_utile": 5800, "atterrissage": "OCISLY", "reussi": True},
+    {"nom": "B1049", "charge_utile": 5000, "atterrissage": "OCISLY", "reussi": True},
+    {"nom": "B1051", "charge_utile": 16000, "atterrissage": "OCISLY", "reussi": False},
+    {"nom": "B1060", "charge_utile": 4400, "atterrissage": "JRTI", "reussi": True},
+]
+
+# Trouver la charge utile maximale
+charge_max = max(b["charge_utile"] for b in boosters)
+boosters_max = [b for b in boosters if b["charge_utile"] == charge_max]
+
+# Filtrer les boosters respectant la condition
+boosters_filtres = [b for b in boosters if 4000 <= b["charge_utile"] <= 6000]
+
+# Compter les missions réussies et échouées
+missions_reussies = sum(1 for b in boosters_filtres if b["reussi"])
+missions_echouees = len(boosters_filtres) - missions_reussies
+
+# Afficher les résultats
+for booster in boosters_filtres:
+    print(f"Booster {booster['nom']} - Charge utile : {booster['charge_utile']} kg - Atterrissage : {booster['atterrissage']}")
+
+print(f"Total des missions réussies : {missions_reussies}")
+print(f"Total des missions échouées : {missions_echouees}")
+
+# Afficher les boosters avec la charge utile maximale
+print("Boosters ayant transporté la charge utile maximale :")
+for booster in boosters_max:
+    print(f"Booster {booster['nom']} - Charge utile : {booster['charge_utile']} kg")
+#-------
+
+failed_landings_2015 = [
+    {
+        "mission": "SpaceX CRS-5",
+        "date": "10 janvier 2015",
+        "booster_version": "Falcon 9 v1.1 (B1012)",
+        "launch_site": "Cape Canaveral LC-40",
+        "failure_reason": "Manque de fluide hydraulique, mauvais angle à l'atterrissage"
+    },
+    {
+        "mission": "SpaceX CRS-6",
+        "date": "14 avril 2015",
+        "booster_version": "Falcon 9 v1.1 (B1015)",
+        "launch_site": "Cape Canaveral LC-40",
+        "failure_reason": "Vitesse latérale excessive due à une vanne défaillante"
+    }
+]
+
+print("Landing outcomes ratés en 2015 sur des vaisseaux drones:\n")
+for landing in failed_landings_2015:
+    print(f"Mission: {landing['mission']}")
+    print(f"Date: {landing['date']}")
+    print(f"Version du booster: {landing['booster_version']}")
+    print(f"Site de lancement: {landing['launch_site']}")
+    print(f"Raison de l'échec: {landing['failure_reason']}\n")
+#------------
+import pandas as pd
+
+# Exemple de données SpaceX (à remplacer par votre dataset réel)
+data = {
+    'launch_date': ['2015-01-10', '2015-04-14', '2016-04-08', '2016-12-21'],
+    'landing_outcome': ['Failure (drone)', 'Failure (drone)', 'Success (drone)', 'Success (ground)']
+}
+
+# Création du DataFrame
+df = pd.DataFrame(data)
+
+# Conversion des dates en format datetime
+df['launch_date'] = pd.to_datetime(df['launch_date'])
+
+# Filtrage des dates entre 2010-06-04 et 2017-03-20
+filtered_df = df[(df['launch_date'] >= '2010-06-04') & (df['launch_date'] <= '2017-03-20')]
+
+# Comptage des résultats d'atterrissage
+landing_counts = filtered_df['landing_outcome'].value_counts()
+
+# Affichage des résultats par ordre décroissant
+print(landing_counts)
+#--------------
+import folium
+
+# Coordonnées des principaux sites de lancement SpaceX
+launch_sites = [
+    {"name": "Cape Canaveral LC-40", "lat": 28.5623, "lon": -80.5774},
+    {"name": "Kennedy Space Center LC-39A", "lat": 28.5721, "lon": -80.6480},
+    {"name": "Vandenberg SLC-4E", "lat": 34.6328, "lon": -120.6108},
+    {"name": "Boca Chica Launch Site", "lat": 25.9972, "lon": -97.1566}
+]
+
+# Création de la carte centrée sur les États-Unis
+spacex_map = folium.Map(location=[28.5623, -80.5774], zoom_start=4)
+
+# Ajout des marqueurs pour chaque site de lancement
+for site in launch_sites:
+    folium.Marker(
+        location=[site['lat'], site['lon']],
+        popup=site['name'],
+        icon=folium.Icon(color='blue', icon='rocket')
+    ).add_to(spacex_map)
+
+# Sauvegarde de la carte dans un fichier HTML
+spacex_map.save("spacex_launch_sites_map.html")
+
+print("Carte générée : spacex_launch_sites_map.html")
+
+
+##--------Fin---------
