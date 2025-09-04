@@ -1,0 +1,151 @@
+
+# ## Tâche 1 : Télécharger et décompresser les données météorologiques de la NOAA
+
+import requests
+import zipfile
+import io
+
+url = "https://dax-cdn.cdn.appdomain.cloud/dax-noaa-weather-data-jfk-airport/1.1.4/noaa_weather.html"  
+print("Téléchargement du fichier ZIP...")
+r = requests.get(url)
+if r.status_code == 200:
+    with zipfile.ZipFile(io.BytesIO(r.content)) as z:
+        z.extractall("data")  # Les fichiers seront extraits dans le dossier "data"
+    print("Téléchargement et décompression réussis.")
+else:
+    print("Erreur lors du téléchargement :", r.status_code)
+#----------
+import pandas as pd
+
+chemin_fichier = "C:/Users/SANKARA/Downloads/noaa-weather-data-jfk-airport/noaa-weather-data-jfk-airport/jfk_weather_cleaned.csv"
+
+# Charger le fichier CSV dans un DataFrame
+df = pd.read_csv(chemin_fichier)
+
+# Affiche les premières lignes pour vérifier l'importation
+print(df.head())
+
+###-----
+# Afficher les types de données des colonnes  
+print(df.dtypes)  
+
+#------------
+# Afficher les 5 premières lignes  
+print(df.head())  
+#---------------
+
+# ## Tâche 3 : Supprimer les colonnes redondantes
+# Indiquez ici les colonnes à supprimer (par exemple, "Unnamed: 0" ou d'autres colonnes inutiles).
+
+colonnes_a_supprimer = ["Unnamed: 0", "Redundant_Column"]  # Adapter selon vos données
+df.drop(columns=colonnes_a_supprimer, inplace=True, errors="ignore")
+print("Colonnes redondantes supprimées. Colonnes restantes :")
+print(df.columns)
+#------------
+
+# ## Tâche 4 : Nettoyer les colonnes
+# Par exemple, enlever les espaces superflus dans les noms de colonnes et dans certains contenus.
+
+df.columns = df.columns.str.strip()
+# Exemple : nettoyage de la colonne "Station" si elle existe
+if "Station" in df.columns:
+    df["Station"] = df["Station"].str.strip()
+print(df)
+#-------------
+
+# ## Tâche 5 : Convertir les colonnes en types numériques
+# Spécifiez ici les colonnes devant être numériques (par ex., "Temperature", "Precipitation", "WindSpeed").
+
+colonnes_numeriques = ["Temperature", "Precipitation", "WindSpeed"]  # Adapter selon vos données
+for col in colonnes_numeriques:
+    if col in df.columns:
+        df[col] = pd.to_numeric(df[col], errors="coerce")
+print("Types de données après conversion :")
+print(df.dtypes)
+#---------
+
+# ## Tâche 6 : Renommer les colonnes de données
+# Par exemple, renommer "Temp" en "Temperature", "Precip" en "Precipitation", etc.
+
+df.rename(columns={
+    "Temp": "Temperature",
+    "Precip": "Precipitation",
+    "Wind": "WindSpeed"
+}, inplace=True)
+print("Nouveaux noms de colonnes :")
+print(df.columns)
+#------------
+
+# ## Tâche 7 : Analyse exploratoire des données (EDA)
+# Affichage d'un résumé statistique et d'un histogramme de la température.
+
+print("Résumé statistique :")
+print(df.describe())
+
+import matplotlib.pyplot as plt
+plt.figure(figsize=(8, 4))
+if "Temperature" in df.columns:
+    plt.hist(df["Temperature"].dropna(), bins=30, color='skyblue', edgecolor='black')
+    plt.title("Distribution de la température")
+    plt.xlabel("Température")
+    plt.ylabel("Fréquence")
+    plt.show()
+#-----------
+# TÂCHE 8 : Régression linéaire
+from sklearn.linear_model import LinearRegression
+from sklearn.model_selection import train_test_split
+
+# Définir les variables explicatives et la variable cible en utilisant les noms de colonnes réels
+features = ["HOURLYPrecip", "HOURLYWindSpeed"]
+target = "HOURLYDRYBULBTEMPF"
+
+# Ne garder que les lignes sans valeurs manquantes pour ces colonnes
+df_model = df.dropna(subset=features + [target])
+X = df_model[features]
+y = df_model[target]
+
+# Diviser les données en ensembles d'entraînement et de test (80%/20%)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# Créer et entraîner le modèle de régression linéaire
+lr = LinearRegression()
+lr.fit(X_train, y_train)
+
+print("Modèle linéaire :")
+print("Coefficients :", lr.coef_)
+print("Intercept :", lr.intercept_)
+print("Score (R²) sur l'ensemble de test :", lr.score(X_test, y_test))
+#------------
+# TÂCHE 9 : Améliorer le modèle avec une transformation polynomiale de degré 2
+from sklearn.preprocessing import PolynomialFeatures
+
+# Créer des caractéristiques polynomiales (degré 2) sans biais
+poly = PolynomialFeatures(degree=2, include_bias=False)
+X_poly = poly.fit_transform(X)
+
+# Diviser les données transformées en ensembles d'entraînement et de test
+X_train_poly, X_test_poly, y_train, y_test = train_test_split(X_poly, y, test_size=0.2, random_state=42)
+
+# Créer et entraîner un modèle de régression linéaire sur les données polynomiales
+lr_poly = LinearRegression()
+lr_poly.fit(X_train_poly, y_train)
+
+# Évaluer le modèle polynomial avec le score R²
+score_poly = lr_poly.score(X_test_poly, y_test)
+print("Modèle polynomial (degré 2) :")
+print("Score (R²) sur l'ensemble de test :", score_poly)
+
+#------------
+
+# ## Tâche 10 : Trouver le meilleur modèle
+# Comparaison des scores R² entre le modèle linéaire et le modèle polynomial.
+
+score_linear = lr.score(X_test, y_test)
+if score_linear >= score_poly:
+    print("Le modèle linéaire est le meilleur avec un score de {:.3f}".format(score_linear))
+else:
+    print("Le modèle polynomial est le meilleur avec un score de {:.3f}".format(score_poly))
+#--------------Fin---------------
+
+
+
