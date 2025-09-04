@@ -1,0 +1,438 @@
+#!pip install requests
+#!pip install pandas
+#!pip install numpy
+
+# Requests allows us to make HTTP requests which we will use to get data from an API
+import requests
+# Pandas is a software library written for the Python programming language for data manipulation and analysis.
+import pandas as pd
+# NumPy is a library for the Python programming language, adding support for large, multi-dimensional arrays and matrices, along with a large collection of high-level mathematical functions to operate on these arrays
+import numpy as np
+# Datetime is a library that allows us to represent dates
+import datetime
+
+# Setting this option will print all columns of a dataframe
+pd.set_option('display.max_columns', None)
+# Setting this option will print all of the data in a feature
+pd.set_option('display.max_colwidth', None)
+
+# Takes the dataset and uses the rocket column to call the API and append the data to the list
+def getBoosterVersion(data):
+    for x in data['rocket']:
+        if x:
+            response = requests.get(f"https://api.spacexdata.com/v4/rockets/{x}")
+            booster_data = response.json()
+            booster_version.append(booster_data['name'])
+
+# Data collection from SpaceX API
+spacex_url = "https://api.spacexdata.com/v4/launches/past"
+response = requests.get(spacex_url)
+data = response.json()
+
+# Converting JSON data to DataFrame
+spacex_df = pd.json_normalize(data)
+
+# Displaying the first few rows
+spacex_df.head()
+
+##-------
+#!pip install requests
+#!pip install pandas
+#!pip install numpy
+
+# Requests allows us to make HTTP requests which we will use to get data from an API
+import requests
+# Pandas is a software library written for the Python programming language for data manipulation and analysis.
+import pandas as pd
+# NumPy is a library for the Python programming language, adding support for large, multi-dimensional arrays and matrices, along with a large collection of high-level mathematical functions to operate on these arrays
+import numpy as np
+# Datetime is a library that allows us to represent dates
+import datetime
+
+# Setting this option will print all columns of a dataframe
+pd.set_option('display.max_columns', None)
+# Setting this option will print all of the data in a feature
+pd.set_option('display.max_colwidth', None)
+
+# Takes the dataset and uses the rocket column to call the API and append the data to the list
+def getBoosterVersion(data):
+    for x in data['rocket']:
+        if x:
+            response = requests.get(f"https://api.spacexdata.com/v4/rockets/{x}")
+            booster_data = response.json()
+            booster_version.append(booster_data['name'])
+
+# Data collection from SpaceX API
+spacex_url = "https://api.spacexdata.com/v4/launches/past"
+response = requests.get(spacex_url)
+data = response.json()
+
+# Converting JSON data to DataFrame
+spacex_df = pd.json_normalize(data)
+
+# Displaying the first few rows
+spacex_df.head()
+spacex_df
+nb_valeurs_manquantes = spacex_df['launchpad'].isna().sum()
+print(f"Nombre de valeurs manquantes dans 'launchpad' : {nb_valeurs_manquantes}")
+
+print(spacex_df.columns)
+
+ import requests
+ from bs4 import BeautifulSoup
+ import pandas as pd
+ # URL contenant le tableau HTML
+ static_url = "TON_URL_ICI"
+ # Effectuer une requête HTTP GET pour récupérer le contenu de la page
+ response = requests.get(static_url)
+ # Vérifier si la requête a réussi
+ if response.status_code == 200:
+     # Créer un objet BeautifulSoup à partir du contenu HTML
+     soup = BeautifulSoup(response.text, "html.parser")
+     # Trouver toutes les tables HTML dans la page
+     html_tables = soup.find_all("table")
+     # Vérifier s'il y a au moins une table
+     if html_tables:
+         # Lire la première table HTML avec Pandas
+         df = pd.read_html(str(html_tables[0]))[0]
+         # Afficher les premières lignes du DataFrame
+         print(df.head())
+     else:
+         print("Aucune table HTML trouvée sur la page.")
+ else:
+     print(f"Erreur {response.status_code} lors de la récupération des données.")
+
+spacex_df['booster_version']
+nb_falcon9 = spacex_df['booster_version'].value_counts().get('Falcon 9', 0)
+print(f"Nombre de lancements Falcon 9 : {nb_falcon9}")
+#-----nb_falcon9 = (spacex_df['booster_version'] == 'Falcon 9').sum()
+print(f"Nombre de lancements Falcon 9 : {nb_falcon9}")
+
+# Filtrer les données pour exclure les lancements de Falcon 1 et compter les lancements de Falcon 9
+nb_falcon9_after_falcon1 = spacex_df[spacex_df['booster_version'] == 'Falcon 9'].shape[0]
+print(f"Nombre de lancements Falcon 9 après avoir retiré les lancements de Falcon 1 : {nb_falcon9_after_falcon1}")
+import pandas as pd
+
+# Charger les données (Remplacez 'your_data.csv' par le nom de votre fichier ou utilisez une API)
+df = spacex_df  # Si vous avez les données sous format CSV
+
+# 1. Combien de lancements ont été effectués à partir du CCAFS SLC 40 ?
+launches_from_CCAFS = df[df['launchpad'] == 'CCAFS SLC 40'].shape[0]
+print(f"Nombre de lancements depuis CCAFS SLC 40 : {launches_from_CCAFS}")
+
+# 2. Quel est le taux de réussite ?
+successful_launches = df['success'].sum()  # Somme des lancements réussis (1 = succès, 0 = échec)
+total_launches = df.shape[0]  # Nombre total de lancements
+success_rate = (successful_launches / total_launches) * 100 if total_launches > 0 else 0
+print(f"Taux de réussite : {success_rate:.2f}%")
+
+# 3. Combien de lancements ont été effectués vers l'orbite géosynchrone ?
+launches_to_geosynchronous_orbit = df[df['payloads'].str.contains('GEO', na=False)].shape[0]
+print(f"Nombre de lancements vers l'orbite géosynchrone : {launches_to_geosynchronous_orbit}")
+
+# 4. Combien de résultats de missions ont atterri avec succès sur un vaisseau drone ?
+landed_on_drone_ship = df[df['cores'].astype(str).str.contains("'landing_success': True, 'landing_type': 'ASDS'", na=False)].shape[0]
+print(f"Nombre d'atterrissages réussis sur un vaisseau drone : {landed_on_drone_ship}")
+
+#---
+import pandas as pd
+
+# Chargement des données (adapté le chemin du fichier)
+df = spacex_df
+
+# ----------------------------------------------
+# 1. Combien de lancements ont été effectués à partir du CCAFS SLC 40?
+# On filtre sur la colonne "launchpad" (en supposant que la valeur est exactement "CCAFS SLC 40")
+nb_ccafs_slc40 = df[df['launchpad'] == 'CCAFS SLC 40'].shape[0]
+print("Lancements depuis CCAFS SLC 40 :", nb_ccafs_slc40)
+# Réponse attendue : 0
+
+# ----------------------------------------------
+# 2. Quel est le taux de réussite ?
+# On suppose que la colonne "success" est de type booléen (True = réussite, False = échec)
+# Le taux de réussite est le pourcentage de lancements réussis.
+total_lancements = df.shape[0]
+reussites = df['success'].sum()  # somme des True (True équivaut à 1)
+taux_reussite = (reussites / total_lancements) * 100
+print("Taux de réussite : {:.0f}%".format(taux_reussite))
+# Réponse attendue : 67%
+
+# ----------------------------------------------
+# 3. Combien de lancements ont été effectués vers l'orbite géosynchrone ?
+# On filtre sur la colonne "orbit" en recherchant la valeur indiquant l'orbite géosynchrone (exemple : "GTO")
+nb_lancements_gto = df[df['orbit'] == 'GTO'].shape[0]
+print("Lancements vers l'orbite géosynchrone :", nb_lancements_gto)
+# Réponse attendue : 0
+
+# ----------------------------------------------
+# 4. Combien de résultats de missions ont été atterris avec succès sur un vaisseau drone ?
+# On filtre sur les lignes où l'atterrissage a été tenté sur un vaisseau drone et a réussi.
+# Par exemple, on suppose que la colonne "landing_type" indique le type de plateforme et que
+# la colonne "landing_success" est True si l'atterrissage a réussi.
+nb_drone_success = df[(df['landing_type'] == 'Drone Ship') & (df['landing_success'] == True)].shape[0]
+print("Résultats de missions atterris avec succès sur un vaisseau drone :", nb_drone_success)
+# Réponse attendue : 115
+
+import pandas as pd
+
+# Charger le fichier CSV contenant les données des lancements
+df = spacex_df
+
+# Afficher un aperçu des données
+#print("Aperçu des données :")
+print(df.head())
+
+# ---------------------------------------------------
+# Question 1 : Combien de lancements ont été effectués à partir du CCAFS SLC 40 ?
+# On suppose que la colonne 'Launchpad' contient le nom du site de lancement.
+launches_ccafs = df[df['Launchpad'] == "CCAFS SLC 40"]
+nb_launches_ccafs = launches_ccafs.shape[0]
+print("\nQuestion 1 : Nombre de lancements à partir du CCAFS SLC 40 :", nb_launches_ccafs)
+
+# ---------------------------------------------------
+# Question 2 : Quel est le taux de réussite ?
+# On suppose que la colonne 'succès' contient des valeurs booléennes (True = succès, False = échec).
+total_launches = df.shape[0]
+successful_launches = df[df['succès'] == True].shape[0]
+taux_reussite = (successful_launches / total_launches) * 100
+print("\nQuestion 2 : Taux de réussite : {:.0f}%".format(taux_reussite))
+# (Les options proposées sont 80%, 40% et 67%)
+
+# ---------------------------------------------------
+# Question 3 : Combien de lancements ont été effectués vers l'orbite géosynchrone ?
+# On suppose que la colonne 'Orbit' contient le type d'orbite, et que 'GEO' indique une orbite géosynchrone.
+launches_geo = df[df['Orbit'] == "GEO"]
+nb_launches_geo = launches_geo.shape[0]
+print("\nQuestion 3 : Nombre de lancements vers l'orbite géosynchrone :", nb_launches_geo)
+
+# ---------------------------------------------------
+# Question 4 : Combien de résultats de missions ont été atterris avec succès sur un vaisseau drone ?
+# On suppose que la colonne 'drone_ship_landing' contient True lorsque le lancement a atterri avec succès sur un vaisseau drone.
+drone_landings = df[df['drone_ship_landing'] == True]
+nb_drone_landings = drone_landings.shape[0]
+print("\nQuestion 4 : Nombre de lancements avec atterrissage réussi sur un vaisseau drone :", nb_drone_landings)
+
+#--
+import pandas as pd
+import ast
+
+# Charger le fichier CSV contenant les données des lancements
+df = spacex_df
+
+# ---------------------------
+# Question 1 :
+# Combien de lancements ont été effectués à partir du CCAFS SLC 40 ?
+# On suppose que l'ID "5e9e4502f5090995de566f86" correspond à "CCAFS SLC 40"
+launchpad_id_ccafs = "5e9e4502f5090995de566f86"
+nb_ccafs = df[df['launchpad'] == launchpad_id_ccafs].shape[0]
+print("Question 1: Nombre de lancements à partir du CCAFS SLC 40 :", nb_ccafs)
+
+# ---------------------------
+# Question 2 :
+# Quel est le taux de réussite ?
+# On utilise la colonne 'success' qui contient des booléens (True = succès)
+total_launches = df.shape[0]
+successful_launches = df[df['success'] == True].shape[0]
+taux_reussite = (successful_launches / total_launches) * 100
+print("Question 2: Taux de réussite : {:.0f}%".format(taux_reussite))
+# Parmi les options proposées (80%, 40%, 67%), le taux obtenu vous permettra de choisir.
+
+# ---------------------------
+# Question 3 :
+# Combien de lancements ont été effectués vers l'orbite géosynchrone ?
+# On suppose que le jeu de données contient une colonne 'orbit' qui indique le type d'orbite,
+# et que la valeur "GEO" correspond à l'orbite géosynchrone.
+if 'orbit' in df.columns:
+    nb_geo = df[df['orbit'] == "GEO"].shape[0]
+    print("Question 3: Nombre de lancements vers l'orbite géosynchrone :", nb_geo)
+else:
+    print("Question 3: La colonne 'orbit' n'existe pas dans le jeu de données.")
+
+# ---------------------------
+# Question 4 :
+# Combien de résultats de missions ont été atterris avec succès sur un vaisseau drone ?
+# La colonne 'cores' contient une chaîne représentant une liste de dictionnaires.
+# On convertit cette chaîne en objet Python pour pouvoir analyser les atterrissages.
+def parse_cores(cores_str):
+    try:
+        return ast.literal_eval(cores_str)
+    except Exception:
+        return []
+
+df['cores_parsed'] = df['cores'].apply(lambda x: parse_cores(x) if pd.notnull(x) else [])
+
+# On définit une fonction qui retourne True si, dans la liste de cores, 
+# au moins un élément indique un atterrissage réussi sur un vaisseau drone.
+# Ici, on suppose que cela est identifié par 'landing_success' == True 
+# et 'landing_type' == "ASDS" (qui est la désignation usuelle pour un drone ship).
+def has_drone_landing(core_list):
+    for core in core_list:
+        if core.get('landing_success') == True and core.get('landing_type') == "ASDS":
+            return True
+    return False
+
+nb_drone_landings = df['cores_parsed'].apply(has_drone_landing).sum()
+print("Question 4: Nombre de missions avec atterrissage réussi sur un vaisseau drone :", nb_drone_landings)
+
+#------
+import pandas as pd
+
+# Chargement des données
+df = spacex_df
+
+# 1. Combien de lancements ont été effectués à partir du CCAFS SLC 40 ?
+lancements_ccafs = df[df['launchpad'] == 'CCAFS SLC 40'].shape[0]
+
+# 2. Quel est le taux de réussite (en pourcentage) ?
+taux_reussite = df['success'].mean() * 100
+
+# 3. Combien de lancements ont été effectués vers l'orbite géosynchrone ?
+# En supposant que l'information sur l'orbite soit dans la colonne 'details'
+lancements_geo = df[df['details'].str.contains('geosynchronous|GEO', case=False, na=False)].shape[0]
+
+# 4. Combien de missions ont atterri avec succès sur un vaisseau drone ?
+atterrissage_drone = df[df['details'].str.contains('drone', case=False, na=False) & (df['success'] == True)].shape[0]
+
+# Affichage des résultats
+print("Nombre de lancements depuis CCAFS SLC 40 :" {lancements_ccafs})
+print("Taux de réussite : {taux_reussite:.2f}%")
+print("Nombre de lancements vers l'orbite géosynchrone : {lancements_geo}")
+print("Nombre d'atterrissages réussis sur un va
+
+#--
+import pandas as pd
+
+# Chargement des données
+df = spacex_df
+
+# 1. Combien de lancements ont été effectués à partir du CCAFS SLC 40 ?
+lancements_ccafs = df[df['launchpad'] == 'CCAFS SLC 40'].shape[0]
+
+# 2. Quel est le taux de réussite (en pourcentage) ?
+taux_reussite = df['success'].mean() * 100
+
+# 3. Combien de lancements ont été effectués vers l'orbite géosynchrone ?
+# En supposant que l'information sur l'orbite soit dans la colonne 'details'
+lancements_geo = df[df['details'].str.contains('geosynchronous|GEO', case=False, na=False)].shape[0]
+
+# 4. Combien de missions ont atterri avec succès sur un vaisseau drone ?
+atterrissage_drone = df[df['details'].str.contains('drone', case=False, na=False) & (df['success'] == True)].shape[0]
+
+# Affichage des résultats
+print(f"Nombre de lancements depuis CCAFS SLC 40 : {lancements_ccafs}")
+print(f"Taux de réussite : {taux_reussite:.2f}%")
+print(f"Nombre de lancements vers l'orbite géosynchrone : {lancements_geo}")
+print(f"Nombre d'atterrissages réussis sur un vaisseau drone : {atterrissage_drone}")
+
+#-------
+import json
+import pandas as pd
+
+# Charger le fichier notebook Jupyter
+file_path = "C:/Users/SANKARA/Downloads/jupyter-labs-spacex-data-collection-api-v2 (4).ipynb"
+with open(file_path, 'r', encoding='utf-8') as f:
+    notebook_data = json.load(f)
+
+# Extraire les cellules de code
+cells = notebook_data.get("cells", [])
+
+# Recherche d'un DataFrame contenant les données des lancements
+for cell in cells:
+    if cell["cell_type"] == "code":
+        source_code = "".join(cell["source"])
+        if "pd.DataFrame" in source_code or "df =" in source_code:
+            exec(source_code)
+
+# Vérifier si un DataFrame a été trouvé
+if 'df' in locals():
+    launch_data = df
+else:
+    raise ValueError("Aucune donnée de lancement trouvée dans le notebook.")
+
+# Filtrer les données pour répondre aux questions
+
+# Question 1: Nombre de lancements à partir du CCAFS SLC 40
+ccafs_slc40_launches = launch_data[launch_data['LaunchSite'] == 'CCAFS SLC 40']
+nbr_lancements_ccafs = len(ccafs_slc40_launches)
+print("Nombre de lancements à partir du CCAFS SLC 40:", nbr_lancements_ccafs)
+
+# Question 2: Taux de réussite
+succes_rate = (launch_data['MissionOutcome'].str.contains("Success").sum() / len(launch_data)) * 100
+print("Taux de réussite:", succes_rate, "%")
+
+# Question 3: Nombre de lancements vers l'orbite géosynchrone
+geo_orbit_launches = launch_data[launch_data['Orbit'] == 'GTO']
+nbr_geo_orbit = len(geo_orbit_launches)
+print("Nombre de lancements vers l'orbite géosynchrone:", nbr_geo_orbit)
+
+# Question 4: Nombre de missions ayant atterri avec succès sur un vaisseau drone
+drone_landings = launch_data[launch_data['LandingOutcome'].str.contains("Success") & launch_data['LandingPad'].str.contains("drone", case=False, na=False)]
+nbr_drone_landings = len(drone_landings)
+print("Nombre de missions atterries avec succès sur un vaisseau drone:", nbr_drone_landings)
+
+#----------
+import pandas as pd
+import requests
+import numpy as np
+
+# Charger les données des lancements depuis l'API SpaceX
+url = "https://api.spacexdata.com/v4/launches/past"
+response = requests.get(url)
+data = response.json()
+
+# Transformer les données en DataFrame
+launch_data = pd.json_normalize(data)
+
+# Question 1: Nombre de lancements à partir du CCAFS SLC 40
+ccafs_slc40_launches = launch_data[launch_data['launchpad'] == '5e9e4502f5090995de566f86']
+nbr_lancements_ccafs = len(ccafs_slc40_launches)
+print("Nombre de lancements à partir du CCAFS SLC 40:", nbr_lancements_ccafs)
+
+# Question 2: Taux de réussite
+succes_rate = (launch_data['success'].sum() / len(launch_data)) * 100
+print("Taux de réussite:", succes_rate, "%")
+
+# Question 3: Nombre de lancements vers l'orbite géosynchrone
+geo_orbit_launches = launch_data[launch_data['rocket'].str.contains('GTO', na=False)]
+nbr_geo_orbit = len(geo_orbit_launches)
+print("Nombre de lancements vers l'orbite géosynchrone:", nbr_geo_orbit)
+
+# Question 4: Nombre de missions ayant atterri avec succès sur un vaisseau drone
+drone_landings = launch_data[launch_data['cores'].astype(str).str.contains("ASDS", case=False, na=False)]
+nbr_drone_landings = len(drone_landings)
+print("Nombre de missions atterries avec succès sur un vaisseau drone:", nbr_drone_landings)
+#--------
+
+
+import pandas as pd
+import requests
+import numpy as np
+
+# Charger les données des lancements depuis l'API SpaceX
+url = "https://api.spacexdata.com/v4/launches/past"
+response = requests.get(url)
+data = response.json()
+
+# Transformer les données en DataFrame
+launch_data = pd.json_normalize(data)
+
+# Question 1: Nombre de lancements à partir du CCAFS SLC 40
+ccafs_slc40_launches = launch_data[launch_data['launchpad'] == 'CCAFS SLC 40']
+nbr_lancements_ccafs = len(ccafs_slc40_launches)
+print("Nombre de lancements à partir du CCAFS SLC 40:", nbr_lancements_ccafs)
+
+# Question 2: Taux de réussite
+succes_rate = (launch_data['success'].sum() / len(launch_data)) * 100
+print("Taux de réussite:", succes_rate, "%")
+
+# Question 3: Nombre de lancements vers l'orbite géosynchrone
+geo_orbit_launches = launch_data[launch_data['payloads'].apply(lambda x: any('GTO' in p['orbit'] for p in x if isinstance(p, dict)))]
+nbr_geo_orbit = len(geo_orbit_launches)
+print("Nombre de lancements vers l'orbite géosynchrone:", nbr_geo_orbit)
+
+# Question 4: Nombre de missions ayant atterri avec succès sur un vaisseau drone
+drone_landings = launch_data[launch_data['cores'].apply(lambda x: any(c.get('landing_success') and 'ASDS' in c.get('landpad', '') for c in x if isinstance(c, dict)))]
+nbr_drone_landings = len(drone_landings)
+print("Nombre de missions atterries avec succès sur un vaisseau drone:", nbr_drone_landings)
+
+####-----------fin--------------
