@@ -1,0 +1,81 @@
+#!pip install sqlalchemy==1.3.9
+#!pip install ipython-sql
+#!pip install ipython-sql prettytable
+%load_ext sql
+import csv, sqlite3
+import prettytable
+prettytable.DEFAULT = 'DEFAULT'
+
+con = sqlite3.connect("my_data1.db")
+cur = con.cursor()
+#!pip install -q pandas
+%sql sqlite:///my_data1.db
+import pandas as pd
+df = pd.read_csv("https://cf-courses-data.s3.us.cloud-object-storage.appdomain.cloud/IBM-DS0321EN-SkillsNetwork/labs/module_2/data/Spacex.csv")
+df.to_sql("SPACEXTBL", con, if_exists='replace', index=False,method="multi")
+
+df
+#-------
+import pandas as pd
+
+# Charger les données depuis un fichier CSV ou un DataFrame existant
+
+# Question 1: Nombre de lancements à partir du CCAFS SLC 40
+ccafs_slc40_launches = df[df['Launch_Site'].str.contains("CCAFS SLC-40", na=False)]
+nbr_lancements_ccafs = len(ccafs_slc40_launches)
+print("Nombre de lancements à partir du CCAFS SLC 40:", nbr_lancements_ccafs)
+
+# Question 2: Taux de réussite
+total_launches = len(df)
+successful_launches = df[df['Mission_Outcome'] == "Succès"]
+taux_reussite = (len(successful_launches) / total_launches) * 100
+print("Taux de réussite:", taux_reussite, "%")
+
+# Question 3: Nombre de lancements vers l'orbite géosynchrone
+gto_launches = df[df['Orbit'].str.contains("GTO", na=False)]
+nbr_geo_orbit = len(gto_launches)
+print("Nombre de lancements vers l'orbite géosynchrone:", nbr_geo_orbit)
+
+# Question 4: Nombre de missions ayant atterri avec succès sur un vaisseau drone
+drone_landings = df[df['Landing_Outcome'].str.contains("Succès", na=False)]
+nbr_drone_landings = len(drone_landings)
+print("Nombre de missions atterries avec succès sur un vaisseau drone:", nbr_drone_landings)
+
+#-----------
+df=pd.read_csv("https://cf-courses-data.s3.us.cloud-object-storage.appdomain.cloud/IBM-DS0321EN-SkillsNetwork/datasets/dataset_part_1.csv")
+df.head(10)
+#-----------
+df.isnull().sum()/len(df)*100
+#----
+df.dtypes
+#----
+import pandas as pd
+import numpy as np
+
+# Charger les données
+df = pd.read_csv("https://cf-courses-data.s3.us.cloud-object-storage.appdomain.cloud/IBM-DS0321EN-SkillsNetwork/datasets/dataset_part_1.csv")
+
+# TÂCHE 1 : Calculer le nombre de lancements sur chaque site
+launch_counts = df['LaunchSite'].value_counts()
+print("Nombre de lancements par site :")
+print(launch_counts)
+
+# Définition des résultats d'atterrissage
+landing_outcomes = df['Outcome'].value_counts()
+print("\nRésultats d'atterrissage :")
+print(landing_outcomes)
+
+# TÂCHE 4 : Création d'une étiquette de résultat d’atterrissage
+def classify_landing(outcome):
+    if outcome in ['True Ocean', 'True RTLS', 'True ASDS']:
+        return 'Success'
+    else:
+        return 'Failure'
+
+# Ajouter une nouvelle colonne avec l'étiquette de résultat d'atterrissage
+df['LandingLabel'] = df['Outcome'].apply(classify_landing)
+
+# Afficher les 10 premières lignes avec la nouvelle colonne
+print("\nAperçu des données avec l'étiquette d'atterrissage :")
+print(df[['LaunchSite', 'Outcome', 'LandingLabel']].head(10))
+#-----fin-----------
