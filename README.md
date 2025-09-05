@@ -224,9 +224,9 @@ Portfolio Data Science/
 ## 📞 Contact
 
 **SANKARA Saïdou**  
-📧 [Votre email]  
-💼 [LinkedIn Profile]  
-🐙 [GitHub Profile]
+📧 skrsaidou@gmail.com  
+💼 https://www.linkedin.com/in/sa%C3%AFdou-sankara-a01775325/
+🐙 https://github.com/sankarasaidou
 
 ---
 
